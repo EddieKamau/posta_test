@@ -5,10 +5,31 @@ import 'package:http/http.dart' as http;
 import 'package:posta_test_ui/src/models/user_model.dart';
 
 const String url = 'http://127.0.0.1:8888/users';
+const String authUrl = 'http://127.0.0.1:8888/auth';
 
 class UsersModule  extends ChangeNotifier{
   List<UserModel> _users = [];
   List<UserModel> get users => _users;
+  Token token = Token();
+
+  Future<ApiResponse> login(String email, String password)async{
+    final base64E = base64Encode(utf8.encode('$email:$password'));
+    final basicAuth = 'Basic $base64E';
+
+    try {
+      final res = await http.get(Uri.parse(authUrl),headers: <String, String>{'authorization': basicAuth});
+      if (res.statusCode == 200) {
+        final body = json.decode(res.body);
+        token = Token(bearer: body['access_token'].toString());
+
+        return ApiResponse(wasSuccessful: true, message: '');
+      } else {
+        return ApiResponse(wasSuccessful: false, message: res.body);
+      }
+    } catch (e) {
+      return ApiResponse(wasSuccessful: false, message: e.toString());
+    }
+  }
 
   void fetchUsers()async{
     try {
@@ -74,4 +95,10 @@ class ApiResponse{
   ApiResponse({required this.wasSuccessful, required this.message});
   bool wasSuccessful;
   String message;
+}
+
+class Token{
+  Token({this.bearer = '', this.expiredOn});
+  String bearer;
+  DateTime? expiredOn;
 }

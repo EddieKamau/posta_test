@@ -14,7 +14,7 @@ class UsersPage extends StatefulWidget {
 class _UsersPageState extends State<UsersPage> {
   UsersModule usersModule = UsersModule();
   List<UserModel> users = [
-    UserModel(fullName: 'ffff', email: 'fgfggfg')
+    UserModel()
   ];
 
   @override
