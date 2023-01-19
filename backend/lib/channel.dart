@@ -1,6 +1,8 @@
 import 'package:backend/backend.dart';
+import 'package:backend/controllers/auth_controller.dart';
 import 'package:backend/controllers/user_controller.dart';
 import 'package:backend/models/model_manager.dart';
+import 'package:backend/models/user_model.dart';
 
 /// This type initializes an application.
 ///
@@ -32,9 +34,11 @@ class BackendChannel extends ApplicationChannel {
   @override
   Controller get entryPoint {
     final router = Router();
+    router.route("/auth").linkFunction((request) async {
+      return Response.unauthorized();
+    });
 
-    // Prefer to use `link` instead of `linkFunction`.
-    // See: https://conduit.io/docs/http/request_controller/
+
     router.route("/users[/:email]").link(UserController.new);
 
     return router;
