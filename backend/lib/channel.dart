@@ -1,4 +1,6 @@
 import 'package:backend/backend.dart';
+import 'package:backend/controllers/user_controller.dart';
+import 'package:backend/models/model_manager.dart';
 
 /// This type initializes an application.
 ///
@@ -15,7 +17,11 @@ class BackendChannel extends ApplicationChannel {
   Future prepare() async {
     logger.onRecord.listen(
         (rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
+    
+    final ModelManager modelManager = ModelManager('');
+    modelManager.openDb();
   }
+  
 
   /// Construct the request channel.
   ///
@@ -29,9 +35,7 @@ class BackendChannel extends ApplicationChannel {
 
     // Prefer to use `link` instead of `linkFunction`.
     // See: https://conduit.io/docs/http/request_controller/
-    router.route("/example").linkFunction((request) async {
-      return Response.ok({"key": "value"});
-    });
+    router.route("/users[/:email]").link(UserController.new);
 
     return router;
   }
